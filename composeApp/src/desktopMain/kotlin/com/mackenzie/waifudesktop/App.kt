@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,14 +19,31 @@ import waifuviewerfordesktop.composeapp.generated.resources.compose_multiplatfor
 
 @Composable
 @Preview
-fun App() {
+fun App(state : MainState) {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
+
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                if(showContent) Text("Ocultame!") else Text("Muestrame!")
+
+            TextField(value = state.textField.value, onValueChange = { newText ->
+                state.textField.value = newText
+            })
+            Text(text = state.text.value)
+            Button(onClick = {
+                state.showText.value = !state.showText.value
+                state.text.value = state.textField.value.buildMessage()
+                if(!state.showText.value) {
+                    state.text.value = ""
+                    state.textField.value = ""
+                }
+            }, enabled = state.buttonEnabled) {
+                if(state.showText.value) Text("Limpiar") else Text("Saludar")
             }
-            AnimatedVisibility(showContent) {
+
+
+            Button(onClick = { state.showContent.value = !state.showContent.value }) {
+                if(state.showContent.value) Text("Ocultame!") else Text("Muestrame!")
+            }
+            AnimatedVisibility(state.showContent.value) {
                 val greeting = remember { Greeting().greet() }
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
@@ -35,3 +53,5 @@ fun App() {
         }
     }
 }
+
+fun String.buildMessage() = "Hola, $this!"
