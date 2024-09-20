@@ -2,7 +2,7 @@ package com.mackenzie.waifudesktop
 
 data class Note(
     val title: String,
-    val desc : String,
+    val desc : String = "",
     val content: String,
     val type: Type = Type.NORMAL
 ) {
@@ -18,26 +18,6 @@ data class Note(
         HEPTAGON(70, "Heptagon"),
         OCTAGON(80, "Octagon"),
         OVAL(90, "Oval")
-    }
-
-    private fun generateMockedNotes(): List<Note> {
-        val list = (1..50).map {
-            Note(
-                title = "Note $it",
-                desc = "Description $it",
-                content = "Content $it",
-                type = getRandomtype(it)
-            )
-        }
-        return list
-    }
-
-    private fun getRandomtype(it: Int): Type {
-        when(it % 5) {
-            0 -> return Type.AUDIO
-            1 -> return Type.NORMAL
-            else -> return Type.TEXT
-        }
     }
 
     fun getMockedNotes(): List<Note> = listOf(
@@ -91,4 +71,56 @@ data class Note(
         9 to Note(title = "Note 9", desc = "Description 9", content = "Content 9"),
         10 to Note(title = "Note 10", desc = "Description 10", content = "Content 10")
     )
+}
+
+interface NoteCallback {
+    fun invoke(note: List<Note>)  // (List<Note>) -> Unit
+}
+
+fun getNotes(cb: (List<Note>) -> Unit) {
+    Thread.sleep(2000)
+    val notes = (1..12).map {
+        Note(
+            title = "Note $it",
+            desc = "Description $it",
+            content = "Content $it",
+            type = getRandomtype(it)
+        )
+    }
+    cb.invoke(notes)
+}
+
+fun getNotes2(cb: (List<Note>) -> NoteCallback) {
+    Thread.sleep(2000)
+    val notes = (1..12).map {
+        Note(
+            title = "Note $it",
+            desc = "Description $it",
+            content = "Content $it",
+            type = getRandomtype(it)
+        )
+    }
+    cb.invoke(notes)
+}
+
+fun generateMockedNotes(): List<Note> {
+    val list = (1..12).map {
+        Note(
+            title = "Note $it",
+            desc = "Description $it",
+            content = "Content $it",
+            type = getRandomtype(it)
+        )
+    }
+    return list
+}
+
+fun getRandomtype(num: Int): Note.Type {
+    if (num % 5 == 0) {
+        return Note.Type.AUDIO
+    } else if (num % 2 == 0) {
+        return Note.Type.TEXT
+    } else {
+        return Note.Type.NORMAL
+    }
 }

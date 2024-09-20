@@ -5,12 +5,14 @@ import androidx.compose.ui.window.application
 
 fun main() {
     val state = MainState()
+    val waifu = WaifuState()
     application {
         Window(
             onCloseRequest = ::exitApplication,
             title = "Waifu Viewer For Desktop",
         ) {
-            App(state)
+            // App(state)
+            WaifuApp(waifu)
         }
     }
 }
